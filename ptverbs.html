@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portuguese Verb Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .progress {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .stats {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .quiz-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .prompt {
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .english-phrase {
+            font-size: 32px;
+            color: #667eea;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .input-group {
+            margin: 20px 0;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        input.correct {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+
+        input.incorrect {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+
+        .correct-answer {
+            font-weight: bold;
+            font-size: 20px;
+            margin-top: 10px;
+        }
+
+        #submitBtn {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        #submitBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #submitBtn:active {
+            transform: translateY(0);
+        }
+
+        #submitBtn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        .completion {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .completion h2 {
+            color: #28a745;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .completion p {
+            font-size: 18px;
+            color: #666;
+            margin: 10px 0;
+        }
+
+        .hint {
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .verb-info {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .tense-selector {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .tense-selector label {
+            color: #666;
+            font-size: 16px;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .tense-selector select {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tense-selector select:hover {
+            background: #f8f9fa;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .tense-selector select:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .accent-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .accent-btn {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            margin: 0;
+            background: #f0f0f0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+            transition: all 0.2s;
+        }
+
+        .accent-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .accent-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🇵🇹 Portuguese Verb Quiz</h1>
+        
+        <div class="tense-selector">
+            <label for="tenseSelect">Focus on:</label>
+            <select id="tenseSelect" onchange="changeTense()">
+                <option value="all">All Tenses (500 questions)</option>
+                <option value="present">Present Tense (100 questions)</option>
+                <option value="preterite">Preterite/Past Tense (100 questions)</option>
+                <option value="imperfect">Imperfect Tense (100 questions)</option>
+                <option value="future">Future Tense (100 questions)</option>
+                <option value="conditional">Conditional Tense (100 questions)</option>
+            </select>
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar" id="progressBar">0/500</div>
+        </div>
+
+        <div class="stats" id="stats">
+            Questions answered: 0 / 500
+        </div>
+
+        <div id="quizArea"></div>
+    </div>
+
+    <script>
+        // Top 20 most common Portuguese verbs with conjugations
+        const verbs = {
+            ser: {
+                infinitive: "ser",
+                english: "to be",
+                present: ["sou", "és", "é", "somos", "são"],
+                preterite: ["fui", "foste", "foi", "fomos", "foram"],
+                imperfect: ["era", "eras", "era", "éramos", "eram"],
+                future: ["serei", "serás", "será", "seremos", "serão"],
+                conditional: ["seria", "serias", "seria", "seríamos", "seriam"]
+            },
+            estar: {
+                infinitive: "estar",
+                english: "to be",
+                present: ["estou", "estás", "está", "estamos", "estão"],
+                preterite: ["estive", "estiveste", "esteve", "estivemos", "estiveram"],
+                imperfect: ["estava", "estavas", "estava", "estávamos", "estavam"],
+                future: ["estarei", "estarás", "estará", "estaremos", "estarão"],
+                conditional: ["estaria", "estarias", "estaria", "estaríamos", "estariam"]
+            },
+            ter: {
+                infinitive: "ter",
+                english: "to have",
+                present: ["tenho", "tens", "tem", "temos", "têm"],
+                preterite: ["tive", "tiveste", "teve", "tivemos", "tiveram"],
+                imperfect: ["tinha", "tinhas", "tinha", "tínhamos", "tinham"],
+                future: ["terei", "terás", "terá", "teremos", "terão"],
+                conditional: ["teria", "terias", "teria", "teríamos", "teriam"]
+            },
+            haver: {
+                infinitive: "haver",
+                english: "to have/exist",
+                present: ["hei", "hás", "há", "havemos", "hão"],
+                preterite: ["houve", "houveste", "houve", "houvemos", "houveram"],
+                imperfect: ["havia", "havias", "havia", "havíamos", "haviam"],
+                future: ["haverei", "haverás", "haverá", "haveremos", "haverão"],
+                conditional: ["haveria", "haverias", "haveria", "haveríamos", "haveriam"]
+            },
+            fazer: {
+                infinitive: "fazer",
+                english: "to do/make",
+                present: ["faço", "fazes", "faz", "fazemos", "fazem"],
+                preterite: ["fiz", "fizeste", "fez", "fizemos", "fizeram"],
+                imperfect: ["fazia", "fazias", "fazia", "fazíamos", "faziam"],
+                future: ["farei", "farás", "fará", "faremos", "farão"],
+                conditional: ["faria", "farias", "faria", "faríamos", "fariam"]
+            },
+            ir: {
+                infinitive: "ir",
+                english: "to go",
+                present: ["vou", "vais", "vai", "vamos", "vão"],
+                preterite: ["fui", "foste", "foi", "fomos", "foram"],
+                imperfect: ["ia", "ias", "ia", "íamos", "iam"],
+                future: ["irei", "irás", "irá", "iremos", "irão"],
+                conditional: ["iria", "irias", "iria", "iríamos", "iriam"]
+            },
+            poder: {
+                infinitive: "poder",
+                english: "can/to be able",
+                present: ["posso", "podes", "pode", "podemos", "podem"],
+                preterite: ["pude", "pudeste", "pôde", "pudemos", "puderam"],
+                imperfect: ["podia", "podias", "podia", "podíamos", "podiam"],
+                future: ["poderei", "poderás", "poderá", "poderemos", "poderão"],
+                conditional: ["poderia", "poderias", "poderia", "poderíamos", "poderiam"]
+            },
+            dizer: {
+                infinitive: "dizer",
+                english: "to say/tell",
+                present: ["digo", "dizes", "diz", "dizemos", "dizem"],
+                preterite: ["disse", "disseste", "disse", "dissemos", "disseram"],
+                imperfect: ["dizia", "dizias", "dizia", "dizíamos", "diziam"],
+                future: ["direi", "dirás", "dirá", "diremos", "dirão"],
+                conditional: ["diria", "dirias", "diria", "diríamos", "diriam"]
+            },
+            dar: {
+                infinitive: "dar",
+                english: "to give",
+                present: ["dou", "dás", "dá", "damos", "dão"],
+                preterite: ["dei", "deste", "deu", "demos", "deram"],
+                imperfect: ["dava", "davas", "dava", "dávamos", "davam"],
+                future: ["darei", "darás", "dará", "daremos", "darão"],
+                conditional: ["daria", "darias", "daria", "daríamos", "dariam"]
+            },
+            ver: {
+                infinitive: "ver",
+                english: "to see",
+                present: ["vejo", "vês", "vê", "vemos", "veem"],
+                preterite: ["vi", "viste", "viu", "vimos", "viram"],
+                imperfect: ["via", "vias", "via", "víamos", "viam"],
+                future: ["verei", "verás", "verá", "veremos", "verão"],
+                conditional: ["veria", "verias", "veria", "veríamos", "veriam"]
+            },
+            saber: {
+                infinitive: "saber",
+                english: "to know",
+                present: ["sei", "sabes", "sabe", "sabemos", "sabem"],
+                preterite: ["soube", "soubeste", "soube", "soubemos", "souberam"],
+                imperfect: ["sabia", "sabias", "sabia", "sabíamos", "sabiam"],
+                future: ["saberei", "saberás", "saberá", "saberemos", "saberão"],
+                conditional: ["saberia", "saberias", "saberia", "saberíamos", "saberiam"]
+            },
+            querer: {
+                infinitive: "querer",
+                english: "to want",
+                present: ["quero", "queres", "quer", "queremos", "querem"],
+                preterite: ["quis", "quiseste", "quis", "quisemos", "quiseram"],
+                imperfect: ["queria", "querias", "queria", "queríamos", "queriam"],
+                future: ["quererei", "quererás", "quererá", "quereremos", "quererão"],
+                conditional: ["quereria", "quererias", "quereria", "quereríamos", "quereriam"]
+            },
+            vir: {
+                infinitive: "vir",
+                english: "to come",
+                present: ["venho", "vens", "vem", "vimos", "vêm"],
+                preterite: ["vim", "vieste", "veio", "viemos", "vieram"],
+                imperfect: ["vinha", "vinhas", "vinha", "vínhamos", "vinham"],
+                future: ["virei", "virás", "virá", "viremos", "virão"],
+                conditional: ["viria", "virias", "viria", "viríamos", "viriam"]
+            },
+            ficar: {
+                infinitive: "ficar",
+                english: "to stay/remain",
+                present: ["fico", "ficas", "fica", "ficamos", "ficam"],
+                preterite: ["fiquei", "ficaste", "ficou", "ficamos", "ficaram"],
+                imperfect: ["ficava", "ficavas", "ficava", "ficávamos", "ficavam"],
+                future: ["ficarei", "ficarás", "ficará", "ficaremos", "ficarão"],
+                conditional: ["ficaria", "ficarias", "ficaria", "ficaríamos", "ficariam"]
+            },
+            pôr: {
+                infinitive: "pôr",
+                english: "to put",
+                present: ["ponho", "pões", "põe", "pomos", "põem"],
+                preterite: ["pus", "puseste", "pôs", "pusemos", "puseram"],
+                imperfect: ["punha", "punhas", "punha", "púnhamos", "punham"],
+                future: ["porei", "porás", "porá", "poremos", "porão"],
+                conditional: ["poria", "porias", "poria", "poríamos", "poriam"]
+            },
+            trazer: {
+                infinitive: "trazer",
+                english: "to bring",
+                present: ["trago", "trazes", "traz", "trazemos", "trazem"],
+                preterite: ["trouxe", "trouxeste", "trouxe", "trouxemos", "trouxeram"],
+                imperfect: ["trazia", "trazias", "trazia", "trazíamos", "traziam"],
+                future: ["trarei", "trarás", "trará", "traremos", "trarão"],
+                conditional: ["traria", "trarias", "traria", "traríamos", "trariam"]
+            },
+            deixar: {
+                infinitive: "deixar",
+                english: "to leave/let",
+                present: ["deixo", "deixas", "deixa", "deixamos", "deixam"],
+                preterite: ["deixei", "deixaste", "deixou", "deixamos", "deixaram"],
+                imperfect: ["deixava", "deixavas", "deixava", "deixávamos", "deixavam"],
+                future: ["deixarei", "deixarás", "deixará", "deixaremos", "deixarão"],
+                conditional: ["deixaria", "deixarias", "deixaria", "deixaríamos", "deixariam"]
+            },
+            falar: {
+                infinitive: "falar",
+                english: "to speak",
+                present: ["falo", "falas", "fala", "falamos", "falam"],
+                preterite: ["falei", "falaste", "falou", "falamos", "falaram"],
+                imperfect: ["falava", "falavas", "falava", "falávamos", "falavam"],
+                future: ["falarei", "falarás", "falará", "falaremos", "falarão"],
+                conditional: ["falaria", "falarias", "falaria", "falaríamos", "falariam"]
+            },
+            passar: {
+                infinitive: "passar",
+                english: "to pass",
+                present: ["passo", "passas", "passa", "passamos", "passam"],
+                preterite: ["passei", "passaste", "passou", "passamos", "passaram"],
+                imperfect: ["passava", "passavas", "passava", "passávamos", "passavam"],
+                future: ["passarei", "passarás", "passará", "passaremos", "passarão"],
+                conditional: ["passaria", "passarias", "passaria", "passaríamos", "passariam"]
+            },
+            chegar: {
+                infinitive: "chegar",
+                english: "to arrive",
+                present: ["chego", "chegas", "chega", "chegamos", "chegam"],
+                preterite: ["cheguei", "chegaste", "chegou", "chegamos", "chegaram"],
+                imperfect: ["chegava", "chegavas", "chegava", "chegávamos", "chegavam"],
+                future: ["chegarei", "chegarás", "chegará", "chegaremos", "chegarão"],
+                conditional: ["chegaria", "chegarias", "chegaria", "chegaríamos", "chegariam"]
+            }
+        };
+
+        const pronouns = [
+            { pt: "eu", en: "I" },
+            { pt: "tu", en: "you (informal)" },
+            { pt: "ele/ela/você", en: "he/she/you" },
+            { pt: "nós", en: "we" },
+            { pt: "eles/elas", en: "they" }
+        ];
+
+        const tenses = [
+            { key: "present", name: "Present", index: 0 },
+            { key: "preterite", name: "Preterite (Past)", index: 1 },
+            { key: "imperfect", name: "Imperfect", index: 2 },
+            { key: "future", name: "Future", index: 3 },
+            { key: "conditional", name: "Conditional", index: 4 }
+        ];
+
+        // Generate all questions
+        let questions = [];
+        Object.keys(verbs).forEach(verbKey => {
+            const verb = verbs[verbKey];
+            tenses.forEach(tense => {
+                pronouns.forEach((pronoun, pIndex) => {
+                    const conjugation = verb[tense.key][pIndex];
+                    const englishPhrase = generateEnglishPhrase(verb.english, tense.key, pronoun.en);
+                    questions.push({
+                        verb: verb.infinitive,
+                        verbEnglish: verb.english,
+                        tense: tense.name,
+                        tenseKey: tense.key,
+                        pronoun: pronoun.pt,
+                        pronounEn: pronoun.en,
+                        answer: `${pronoun.pt} ${conjugation}`,
+                        englishPhrase: englishPhrase,
+                        attempts: 0
+                    });
+                });
+            });
+        });
+
+        // Shuffle questions
+        questions = shuffleArray(questions);
+
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let isWaitingForCorrection = false;
+        let selectedTense = "all";
+        let filteredQuestions = [];
+
+        function generateEnglishPhrase(verbEn, tense, pronounEn) {
+            const templates = {
+                present: {
+                    "I": "I ",
+                    "you (informal)": "you ",
+                    "he/she/you": "he/she ",
+                    "we": "we ",
+                    "they": "they "
+                },
+                preterite: {
+                    "I": "I ",
+                    "you (informal)": "you ",
+                    "he/she/you": "he/she ",
+                    "we": "we ",
+                    "they": "they "
+                },
+                imperfect: {
+                    "I": "I used to ",
+                    "you (informal)": "you used to ",
+                    "he/she/you": "he/she used to ",
+                    "we": "we used to ",
+                    "they": "they used to "
+                },
+                future: {
+                    "I": "I will ",
+                    "you (informal)": "you will ",
+                    "he/she/you": "he/she will ",
+                    "we": "we will ",
+                    "they": "they will "
+                },
+                conditional: {
+                    "I": "I would ",
+                    "you (informal)": "you would ",
+                    "he/she/you": "he/she would ",
+                    "we": "we would ",
+                    "they": "they would "
+                }
+            };
+
+            let prefix = templates[tense][pronounEn];
+            let verbText = verbEn;
+
+            // Adjust for different tenses
+            if (tense === "preterite") {
+                // Convert to simple past
+                if (verbEn === "to be") verbText = "was/were";
+                else if (verbEn === "to have") verbText = "had";
+                else if (verbEn === "to have/exist") verbText = "had/existed";
+                else if (verbEn === "to do/make") verbText = "did/made";
+                else if (verbEn === "to go") verbText = "went";
+                else if (verbEn === "can/to be able") verbText = "could";
+                else if (verbEn === "to say/tell") verbText = "said/told";
+                else if (verbEn === "to give") verbText = "gave";
+                else if (verbEn === "to see") verbText = "saw";
+                else if (verbEn === "to know") verbText = "knew";
+                else if (verbEn === "to want") verbText = "wanted";
+                else if (verbEn === "to come") verbText = "came";
+                else if (verbEn === "to stay/remain") verbText = "stayed";
+                else if (verbEn === "to put") verbText = "put";
+                else if (verbEn === "to bring") verbText = "brought";
+                else if (verbEn === "to leave/let") verbText = "left/let";
+                else if (verbEn === "to speak") verbText = "spoke";
+                else if (verbEn === "to pass") verbText = "passed";
+                else if (verbEn === "to arrive") verbText = "arrived";
+            } else if (tense === "present") {
+                verbText = verbEn.replace("to ", "");
+                // Add 's' for third person singular in present
+                if (pronounEn === "he/she/you") {
+                    if (verbText.endsWith("y")) verbText = verbText.slice(0, -1) + "ies";
+                    else if (verbText.endsWith("o") || verbText.endsWith("s") || verbText.endsWith("sh") || verbText.endsWith("ch")) {
+                        verbText += "es";
+                    } else if (verbText === "have") {
+                        verbText = "has";
+                    } else if (verbText === "be") {
+                        verbText = "is";
+                    } else if (verbText === "can/be able") {
+                        verbText = "can";
+                    } else {
+                        verbText += "s";
+                    }
+                }
+                if (verbText === "be" && pronounEn === "I") verbText = "am";
+                else if (verbText === "be") verbText = "are";
+                if (verbText === "have/exist" && pronounEn === "he/she/you") verbText = "has";
+                else if (verbText === "have/exist") verbText = "have";
+                if (verbText === "can/be able" || verbText === "cans/be able") verbText = "can";
+            } else {
+                verbText = verbEn.replace("to ", "");
+            }
+
+            return prefix + verbText;
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function normalizeAnswer(answer) {
+            return answer
+                .toLowerCase()
+                .trim()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, ""); // Remove accents for comparison
+        }
+
+        function filterQuestions() {
+            if (selectedTense === "all") {
+                filteredQuestions = [...questions];
+            } else {
+                filteredQuestions = questions.filter(q => q.tenseKey === selectedTense);
+            }
+            filteredQuestions = shuffleArray(filteredQuestions);
+        }
+
+        function changeTense() {
+            selectedTense = document.getElementById('tenseSelect').value;
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            isWaitingForCorrection = false;
+            
+            // Reset attempts for all questions
+            questions.forEach(q => q.attempts = 0);
+            
+            filterQuestions();
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            const question = filteredQuestions[currentQuestionIndex];
+            const quizArea = document.getElementById('quizArea');
+            
+            quizArea.innerHTML = `
+                <div class="quiz-card">
+                    <div class="verb-info">Verb: ${question.verb} (${question.verbEnglish}) • Tense: ${question.tense}</div>
+                    <div class="prompt">Translate to Portuguese:</div>
+                    <div class="english-phrase">${question.englishPhrase}</div>
+                    <div class="input-group">
+                        <input type="text" id="answerInput" placeholder="Type your answer here..." autocomplete="off" autofocus>
+                        <div class="accent-buttons">
+                            <button type="button" class="accent-btn" onclick="addAccent('á')">á</button>
+                            <button type="button" class="accent-btn" onclick="addAccent('é')">é</button>
+                            <button type="button" class="accent-btn" onclick="addAccent('í')">í</button>
+                            <button type="button" class="accent-btn" onclick="addAccent('ó')">ó</button>
+                            <button type="button" class="accent-btn" onclick="addAccent('ú')">ú</button>
+                            <button type="button" class="accent-btn" onclick="addAccent('â')">â</button>
+                            <button type="button" class="accent-btn" onclick="addAccent('ê')">ê</button>
+                            <button type="button" class="accent-btn" onclick="addAccent('ô')">ô</button>
+                            <button type="button" class="accent-btn" onclick="addAccent('ã')">ã</button>
+                            <button type="button" class="accent-btn" onclick="addAccent('õ')">õ</button>
+                            <button type="button" class="accent-btn" onclick="addAccent('ç')">ç</button>
+                        </div>
+                    </div>
+                    <div id="feedback"></div>
+                    <button id="submitBtn" onclick="checkAnswer()">Submit Answer</button>
+                    <div class="hint">Use the pronoun: ${question.pronoun}${question.pronoun.includes('/') ? ' (any one)' : ''}</div>
+                </div>
+            `;
+
+            // Add enter key listener
+            document.getElementById('answerInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkAnswer();
+                }
+            });
+
+            updateProgress();
+        }
+
+        function addAccent(char) {
+            const input = document.getElementById('answerInput');
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const text = input.value;
+            
+            // Insert character at cursor position
+            input.value = text.substring(0, start) + char + text.substring(end);
+            
+            // Move cursor after inserted character
+            input.selectionStart = input.selectionEnd = start + 1;
+            
+            // Keep focus on input
+            input.focus();
+        }
+
+        function checkAnswerVariations(userAnswer, correctAnswer, pronoun) {
+            // Normalize the correct answer
+            const normalizedCorrect = normalizeAnswer(correctAnswer);
+            
+            // Check exact match first
+            if (userAnswer === normalizedCorrect) {
+                return true;
+            }
+            
+            // If the pronoun contains multiple options (e.g., "ele/ela/você" or "eles/elas")
+            if (pronoun.includes('/')) {
+                const pronounOptions = pronoun.split('/');
+                const conjugation = correctAnswer.replace(pronoun, '').trim();
+                
+                // Check if user's answer matches any pronoun variation
+                for (let pronounOption of pronounOptions) {
+                    const variation = `${pronounOption} ${conjugation}`;
+                    const normalizedVariation = normalizeAnswer(variation);
+                    if (userAnswer === normalizedVariation) {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        }
+
+        function checkAnswer() {
+            const question = filteredQuestions[currentQuestionIndex];
+            const userAnswer = document.getElementById('answerInput').value;
+            const feedback = document.getElementById('feedback');
+            const input = document.getElementById('answerInput');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (!userAnswer.trim()) {
+                return;
+            }
+
+            const normalizedUser = normalizeAnswer(userAnswer);
+            const isCorrect = checkAnswerVariations(normalizedUser, question.answer, question.pronoun);
+
+            if (isCorrect) {
+                // Correct answer
+                input.classList.remove('incorrect');
+                input.classList.add('correct');
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = '✓ Correct!';
+                
+                if (!isWaitingForCorrection) {
+                    correctAnswers++;
+                }
+                
+                isWaitingForCorrection = false;
+                
+                // Move to next question after a short delay
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    if (currentQuestionIndex < filteredQuestions.length) {
+                        displayQuestion();
+                    } else {
+                        showCompletion();
+                    }
+                }, 1000);
+                
+                submitBtn.disabled = true;
+            } else {
+                // Incorrect answer
+                input.classList.remove('correct');
+                input.classList.add('incorrect');
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = `
+                    ✗ Incorrect. The correct answer is:<br>
+                    <div class="correct-answer">${question.answer}</div>
+                    <br>Please type the correct answer to continue.
+                `;
+                isWaitingForCorrection = true;
+                question.attempts++;
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        function updateProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const stats = document.getElementById('stats');
+            const total = filteredQuestions.length;
+            const percentage = (correctAnswers / total) * 100;
+            
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = `${correctAnswers}/${total}`;
+            stats.textContent = `Questions answered: ${correctAnswers} / ${total}`;
+        }
+
+        function showCompletion() {
+            const quizArea = document.getElementById('quizArea');
+            const totalAttempts = filteredQuestions.reduce((sum, q) => sum + q.attempts, 0);
+            const accuracy = ((filteredQuestions.length / (filteredQuestions.length + totalAttempts)) * 100).toFixed(1);
+            const totalQuestions = filteredQuestions.length;
+            
+            quizArea.innerHTML = `
+                <div class="completion">
+                    <h2>🎉 Congratulations!</h2>
+                    <p>You've completed all ${totalQuestions} questions!</p>
+                    <p style="font-size: 24px; color: #667eea; margin: 20px 0;">
+                        Accuracy: ${accuracy}%
+                    </p>
+                    <p>Total questions: ${totalQuestions}</p>
+                    <p>Extra attempts needed: ${totalAttempts}</p>
+                    <button id="submitBtn" onclick="restartQuiz()" style="margin-top: 30px;">Start Over</button>
+                </div>
+            `;
+        }
+
+        function restartQuiz() {
+            questions.forEach(q => q.attempts = 0);
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            isWaitingForCorrection = false;
+            filterQuestions();
+            displayQuestion();
+        }
+
+        // Start the quiz
+        filterQuestions();
+        displayQuestion();
+    </script>
+</body>
+</html>
+
