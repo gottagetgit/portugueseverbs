@@ -274,6 +274,97 @@
         .accent-btn:active {
             transform: translateY(0);
         }
+
+        .mistakes-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .mistakes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .mistakes-title {
+            color: #667eea;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .mistakes-count {
+            background: #dc3545;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .mistakes-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .mistakes-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .mistakes-list::-webkit-scrollbar-track {
+            background: #e0e0e0;
+            border-radius: 10px;
+        }
+
+        .mistakes-list::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .mistakes-list::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        .mistakes-list:empty::after {
+            content: "No mistakes yet! Keep going! 💪";
+            color: #999;
+            font-style: italic;
+            display: block;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .mistake-item {
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .mistake-english {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .mistake-answer {
+            color: #28a745;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .mistake-verb-info {
+            color: #999;
+            font-size: 12px;
+            margin-top: 5px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -301,6 +392,14 @@
         </div>
 
         <div id="quizArea"></div>
+
+        <div class="mistakes-section">
+            <div class="mistakes-header">
+                <div class="mistakes-title">📝 Review Your Mistakes</div>
+                <div class="mistakes-count" id="mistakesCount">0</div>
+            </div>
+            <div class="mistakes-list" id="mistakesList"></div>
+        </div>
     </div>
 
     <script>
@@ -535,6 +634,7 @@
         let isWaitingForCorrection = false;
         let selectedTense = "all";
         let filteredQuestions = [];
+        let mistakes = [];
 
         function generateEnglishPhrase(verbEn, tense, pronounEn) {
             const templates = {
@@ -660,12 +760,14 @@
             currentQuestionIndex = 0;
             correctAnswers = 0;
             isWaitingForCorrection = false;
+            mistakes = [];
             
             // Reset attempts for all questions
             questions.forEach(q => q.attempts = 0);
             
             filterQuestions();
             displayQuestion();
+            updateMistakesList();
         }
 
         function displayQuestion() {
@@ -800,11 +902,57 @@
                     <div class="correct-answer">${question.answer}</div>
                     <br>Please type the correct answer to continue.
                 `;
+                
+                // Add to mistakes list (only first attempt)
+                if (!isWaitingForCorrection) {
+                    addMistake(question);
+                }
+                
                 isWaitingForCorrection = true;
                 question.attempts++;
                 input.value = '';
                 input.focus();
             }
+        }
+
+        function addMistake(question) {
+            // Check if this exact question is already in mistakes
+            const alreadyAdded = mistakes.some(m => 
+                m.englishPhrase === question.englishPhrase && 
+                m.answer === question.answer
+            );
+            
+            if (!alreadyAdded) {
+                mistakes.push({
+                    englishPhrase: question.englishPhrase,
+                    answer: question.answer,
+                    verb: question.verb,
+                    verbEnglish: question.verbEnglish,
+                    tense: question.tense
+                });
+                updateMistakesList();
+            }
+        }
+
+        function updateMistakesList() {
+            const mistakesList = document.getElementById('mistakesList');
+            const mistakesCount = document.getElementById('mistakesCount');
+            
+            mistakesCount.textContent = mistakes.length;
+            
+            if (mistakes.length === 0) {
+                mistakesList.innerHTML = '';
+                return;
+            }
+            
+            // Show newest mistakes first (reverse order)
+            mistakesList.innerHTML = [...mistakes].reverse().map(mistake => `
+                <div class="mistake-item">
+                    <div class="mistake-english">${mistake.englishPhrase}</div>
+                    <div class="mistake-answer">✓ ${mistake.answer}</div>
+                    <div class="mistake-verb-info">${mistake.verb} (${mistake.verbEnglish}) • ${mistake.tense}</div>
+                </div>
+            `).join('');
         }
 
         function updateProgress() {
@@ -843,13 +991,16 @@
             currentQuestionIndex = 0;
             correctAnswers = 0;
             isWaitingForCorrection = false;
+            mistakes = [];
             filterQuestions();
             displayQuestion();
+            updateMistakesList();
         }
 
         // Start the quiz
         filterQuestions();
         displayQuestion();
+        updateMistakesList();
     </script>
 </body>
 </html>
