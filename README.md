@@ -1,6 +1,6 @@
 # Portuguese Verb Quiz 🇵🇹
 
-An interactive web application for learning and practicing Portuguese verb conjugations. Master the 20 most common Portuguese verbs across 5 essential tenses with an intelligent quiz system.
+An interactive web application for learning and practicing European Portuguese (pt-PT) verb conjugations. Master the 20 most common Portuguese verbs across 5 essential tenses with an intelligent quiz system.
 
 ## Features
 
